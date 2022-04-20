@@ -1,46 +1,37 @@
-# Advanced Sample Hardhat Project
+# DAO
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+[Rinkeby](https://rinkeby.etherscan.io/address/0xE9a40356398b2652CbA4b7C19A287d821eD5D3D3)
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+### Coverage
 
-Try running some of the following tasks:
+| Contract | % Stmts | % Branch | % Funcs | % Lines |
+|----------|---------|----------|---------|---------|
+| DAO      | 100     | 100      | 100     | 100     |
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
-
-# Etherscan verification
-
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
-
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+### Deploy
 
 ```shell
-hardhat run --network ropsten scripts/deploy.ts
+CHAIRPERSON=ADDRESS VOTE_TOKEN=ADDRESS MINIMUM_QUORUM=AMOUNT DEBATING_PERIOD_DURATION=SECONDS npx hardhat run scripts/deploy.ts
 ```
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
+### Verification
 
 ```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
+npx hardhat verify CONTRACT_ADDRESS CHAIRPERSON_ADDRESS VOTE_TOKEN_ADDRESS MINIMUM_QUORUM DEBATING_PERIOD_DURATION --network rinkeby
 ```
 
-# Performance optimizations
+### Custom tasks
 
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+```shell
+npx hardhat vote
+npx hardhat finish
+npx hardhat deposit
+npx hardhat addproposal
+```
+
+#### Examples
+
+```shell
+CHAIRPERSON=0xf132AB7E1a93854aa310384ACF65Cf02d19Fc7c3 VOTE_TOKEN=0xc67Dd578404BB01F5F810Bde8b47D047966A4Ec0 MINIMUM_QUORUM=50000 DEBATING_PERIOD_DURATION=36000 npx hardhat run scripts/deploy.ts --network rinkeby
+hardhat verify 0xE9a40356398b2652CbA4b7C19A287d821eD5D3D3 0xf132AB7E1a93854aa310384ACF65Cf02d19Fc7c3 0xc67Dd578404BB01F5F810Bde8b47D047966A4Ec0 50000 36000 --network rinkeby
+```
