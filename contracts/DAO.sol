@@ -92,11 +92,12 @@ contract DAO {
         require(electorBalance > 0, "You don't have tokens");
 
         Proposal storage proposal = _proposals[_id];
-        require(proposal.finishAt >= block.timestamp, "Proposal is not active");
+        uint256 finishAt = proposal.finishAt;
+        require(finishAt >= block.timestamp, "Proposal is not active");
         require(!proposal.voted[msg.sender], "You've already done the voice");
 
         /// User can claim his own tokens after the end of the last proposal
-        if (proposal.finishAt > elector.canClaimAt) elector.canClaimAt = proposal.finishAt;
+        if (finishAt > elector.canClaimAt) elector.canClaimAt = finishAt;
 
         if (_support) proposal.pros = proposal.pros + electorBalance;
         else proposal.cons = proposal.cons + electorBalance;
