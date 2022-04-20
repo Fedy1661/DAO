@@ -192,6 +192,14 @@ describe('DAO Contract', function () {
       const reason = "You've already done the voice";
       await expect(tx).to.be.revertedWith(reason);
     });
+    it('should revert if proposal is not active', async () => {
+      await token.approve(dao.address, minimumQuorum);
+      await dao.deposit(minimumQuorum);
+
+      const tx = dao.vote(1, true);
+      const reason = "Proposal is not active";
+      await expect(tx).to.be.revertedWith(reason);
+    });
   });
   describe('addProposal', () => {
     it('should call only by chairperson', async () => {
