@@ -98,14 +98,14 @@ contract DAO {
     function withdraw(uint256 _amount) external {
         require(_amount > 0, "Amount should be greater than 0");
 
-        Elector storage user = _electors[msg.sender];
-        uint256 balance = user.balance;
+        Elector storage elector = _electors[msg.sender];
+        uint256 electorBalance = elector.balance;
 
-        require(balance > 0, "You don't have tokens");
-        require(balance >= _amount, "Amount greater than your balance");
-        require(user.canClaimAt <= block.timestamp, "You can withdraw after the latest proposal");
+        require(electorBalance > 0, "You don't have tokens");
+        require(electorBalance >= _amount, "Amount greater than your balance");
+        require(elector.canClaimAt <= block.timestamp, "You can withdraw after the latest proposal");
 
-        user.balance = balance - _amount;
+        elector.balance = electorBalance - _amount;
         voteToken.safeTransfer(msg.sender, _amount);
 
         emit Withdraw(msg.sender, _amount);
