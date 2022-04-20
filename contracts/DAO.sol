@@ -42,6 +42,8 @@ contract DAO {
     event Deposit(address elector, uint256 amount);
     event Vote(uint256 id, address elector, uint256 amount, bool support);
     event FinishProposal(uint256 id, uint256 pros, uint256 cons, uint256 total, bool status);
+    event NewProposal(uint256 id, bytes signature, address recipient, string description, uint256 finishAt);
+
 
     modifier onlyChairperson {
         require(msg.sender == chairperson, "Caller is not the chairperson");
@@ -116,11 +118,14 @@ contract DAO {
 
         uint256 id = _voteCounter.current();
 
-        _proposals[id].finishAt = block.timestamp + debatingPeriodDuration;
+        uint256 finishAt = block.timestamp + debatingPeriodDuration;
+        _proposals[id].finishAt = finishAt;
         _proposals[id].description = _description;
         _proposals[id].recipient = _recipient;
         _proposals[id].active = true;
         _callDataProposals[id] = _signature;
+
+        emit NewProposal(id, _signature, _recipient, _description, finishAt);
     }
 
     function finishProposal(uint256 _id) external {
