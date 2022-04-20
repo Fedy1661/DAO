@@ -197,7 +197,22 @@ describe('DAO Contract', function () {
       await dao.deposit(minimumQuorum);
 
       const tx = dao.vote(1, true);
-      const reason = "Proposal is not active";
+      const reason = 'Proposal is not active';
+      await expect(tx).to.be.revertedWith(reason);
+    });
+    it('should revert if debating period duration is over', async () => {
+      const callData = iToken.encodeFunctionData('mint', [dao.address, 5000]);
+      await dao
+        .connect(chairperson)
+        .addProposal(callData, token.address, 'Increase TotalSupply');
+
+      await token.approve(dao.address, minimumQuorum);
+      await dao.deposit(minimumQuorum);
+
+      await increaseTime(debatingPeriodDuration);
+
+      const tx = dao.vote(1, true);
+      const reason = 'Proposal is not active';
       await expect(tx).to.be.revertedWith(reason);
     });
   });
@@ -218,7 +233,7 @@ describe('DAO Contract', function () {
       await expect(tx).to.be.revertedWith(reason);
     });
   });
-  describe("finishProposal", () => {
+  describe('finishProposal', () => {
     it('should execute call', async () => {
       const callData = iToken.encodeFunctionData('mint', [dao.address, 5000]);
       await dao
