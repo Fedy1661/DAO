@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+
 contract DAO {
     using Counters for Counters.Counter;
 
@@ -44,7 +45,6 @@ contract DAO {
     event FinishProposal(uint256 id, uint256 pros, uint256 cons, uint256 total, bool status);
     event NewProposal(uint256 id, bytes signature, address recipient, string description, uint256 finishAt);
 
-
     modifier onlyChairperson {
         require(msg.sender == chairperson, "Caller is not the chairperson");
         _;
@@ -54,9 +54,13 @@ contract DAO {
         require(msg.sender == owner, "Caller is not the owner");
         _;
     }
+
     /**
-    * @param _chairperson Address chairman
-    * @
+    * @dev Constructor
+    * @param _chairperson Chairperson address
+    * @param _voteToken Token address
+    * @param _minimumQuorum Minimum tokens
+    * @param _debatingPeriodDuration Seconds
     */
     constructor(
         address _chairperson,
@@ -71,6 +75,10 @@ contract DAO {
         debatingPeriodDuration = _debatingPeriodDuration;
     }
 
+    /**
+    * @dev Make a deposit
+    * @param _amount Amount of tokens
+    */
     function deposit(uint256 _amount) external {
         voteToken.safeTransferFrom(msg.sender, address(this), _amount);
         _electors[msg.sender].balance = _amount;
@@ -78,6 +86,11 @@ contract DAO {
         emit Deposit(msg.sender, _amount);
     }
 
+    /**
+    * @dev Cost a vote
+    * @param _id Proposal ID
+    * @param _support True or false
+    */
     function vote(uint256 _id, bool _support) external {
         Elector storage elector = _electors[msg.sender];
         uint256 electorBalance = elector.balance;
@@ -97,6 +110,10 @@ contract DAO {
         emit Vote(_id, msg.sender, electorBalance, _support);
     }
 
+    /**
+    * @dev Withdraw your deposited tokens
+    * @param _amount Amount of tokens
+    */
     function withdraw(uint256 _amount) external {
         require(_amount > 0, "Amount should be greater than 0");
 
@@ -113,6 +130,12 @@ contract DAO {
         emit Withdraw(msg.sender, _amount);
     }
 
+    /**
+    * @dev Add a new proposal
+    * @param _callData Signature with arguments
+    * @param _recipient Recipient address
+    * @param _description Description
+    */
     function addProposal(bytes calldata _callData, address _recipient, string calldata _description) external onlyChairperson {
         _voteCounter.increment();
 
@@ -128,6 +151,10 @@ contract DAO {
         emit NewProposal(id, _callData, _recipient, _description, finishAt);
     }
 
+    /**
+    * @dev Finish the proposal and call function
+    * @param _id Proposal ID
+    */
     function finishProposal(uint256 _id) external {
         Proposal storage proposal = _proposals[_id];
         require(proposal.finishAt <= block.timestamp, "Debating period is not over");
@@ -147,11 +174,18 @@ contract DAO {
         emit FinishProposal(_id, pros, cons, total, success);
     }
 
-
+    /**
+    * @dev Set minimum quorum
+    * @param _amount Amount of quorum
+    */
     function setMinimumQuorum(uint256 _amount) external onlyOwner {
         minimumQuorum = _amount;
     }
 
+    /**
+    * @dev Set debating period duration
+    * @param _time Seconds
+    */
     function setDebatingPeriodDuration(uint256 _time) external onlyOwner {
         debatingPeriodDuration = _time;
     }
