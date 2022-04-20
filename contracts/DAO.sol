@@ -113,7 +113,7 @@ contract DAO {
         emit Withdraw(msg.sender, _amount);
     }
 
-    function addProposal(bytes calldata _signature, address _recipient, string calldata _description) external onlyChairperson {
+    function addProposal(bytes calldata _callData, address _recipient, string calldata _description) external onlyChairperson {
         _voteCounter.increment();
 
         uint256 id = _voteCounter.current();
@@ -123,9 +123,9 @@ contract DAO {
         _proposals[id].description = _description;
         _proposals[id].recipient = _recipient;
         _proposals[id].active = true;
-        _callDataProposals[id] = _signature;
+        _callDataProposals[id] = _callData;
 
-        emit NewProposal(id, _signature, _recipient, _description, finishAt);
+        emit NewProposal(id, _callData, _recipient, _description, finishAt);
     }
 
     function finishProposal(uint256 _id) external {
