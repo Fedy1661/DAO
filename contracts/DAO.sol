@@ -77,21 +77,22 @@ contract DAO {
     }
 
     function vote(uint256 _id, bool _support) external {
-        Elector storage user = _electors[msg.sender];
-        require(user.balance > 0, "You don't have tokens");
+        Elector storage elector = _electors[msg.sender];
+        uint256 electorBalance = elector.balance;
+        require(electorBalance > 0, "You don't have tokens");
 
         Proposal storage proposal = _proposals[_id];
         require(!proposal.voted[msg.sender], "You've already done the voice");
 
-        // User can claim his own tokens after the end of the last proposal
-        if (proposal.finishAt > user.canClaimAt) user.canClaimAt = proposal.finishAt;
+        /// User can claim his own tokens after the end of the last proposal
+        if (proposal.finishAt > elector.canClaimAt) elector.canClaimAt = proposal.finishAt;
 
-        if (_support) proposal.pros += user.balance;
-        else proposal.cons += user.balance;
+        if (_support) proposal.pros = proposal.pros + electorBalance;
+        else proposal.cons = proposal.cons + electorBalance;
 
         proposal.voted[msg.sender] = true;
 
-        emit Vote(_id, msg.sender, user.balance, _support);
+        emit Vote(_id, msg.sender, electorBalance, _support);
     }
 
     function withdraw(uint256 _amount) external {
