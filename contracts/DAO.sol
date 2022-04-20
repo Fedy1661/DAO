@@ -128,19 +128,18 @@ contract DAO {
         require(proposal.finishAt <= block.timestamp, "Debating period is not over");
         require(proposal.active, "Debate is over");
 
-        delete proposal.active;
+        uint256 pros = proposal.pros;
+        uint256 cons = proposal.cons;
+        uint256 total = pros + cons;
+        bool success;
 
-        uint256 total = proposal.pros + proposal.cons;
-        if (
-            total < minimumQuorum ||
-            proposal.cons >= proposal.pros
-        ) {
-            emit FinishProposal(_id, proposal.pros, proposal.cons, total, false);
-            return;
+        if (total >= minimumQuorum && pros > cons) {
+            (success,) = proposal.recipient.call(_callDataProposals[_id]);
         }
 
-        (bool success,) = proposal.recipient.call(_callDataProposals[_id]);
-        emit FinishProposal(_id, proposal.pros, proposal.cons, total, success);
+        delete proposal.active;
+
+        emit FinishProposal(_id, pros, cons, total, success);
     }
 
 
