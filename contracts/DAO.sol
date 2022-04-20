@@ -139,11 +139,12 @@ contract DAO {
         _voteCounter.increment();
         uint256 id = _voteCounter.current();
 
+        Proposal storage proposal = _proposals[id];
         uint256 finishAt = block.timestamp + debatingPeriodDuration;
-        _proposals[id].finishAt = finishAt;
-        _proposals[id].description = _description;
-        _proposals[id].recipient = _recipient;
-        _proposals[id].active = true;
+        proposal.finishAt = finishAt;
+        proposal.description = _description;
+        proposal.recipient = _recipient;
+        proposal.active = true;
         _callDataProposals[id] = _callData;
 
         emit NewProposal(id, _callData, _recipient, _description, finishAt);
