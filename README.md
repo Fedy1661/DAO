@@ -8,6 +8,10 @@
 |----------|---------|----------|---------|---------|
 | DAO      | 100     | 100      | 100     | 100     |
 
+### Documentation
+
+[DAO.sol](https://fedy1661.github.io/DAO/#/contracts/DAO.sol:DAO)
+
 ### Deploy
 
 ```shell
@@ -29,7 +33,7 @@ npx hardhat deposit
 npx hardhat addproposal
 ```
 
-#### Examples
+### Examples
 
 ```shell
 CHAIRPERSON=0xf132AB7E1a93854aa310384ACF65Cf02d19Fc7c3 VOTE_TOKEN=0xc67Dd578404BB01F5F810Bde8b47D047966A4Ec0 MINIMUM_QUORUM=50000 DEBATING_PERIOD_DURATION=36000 npx hardhat run scripts/deploy.ts --network rinkeby
