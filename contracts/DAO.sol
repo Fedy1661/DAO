@@ -45,11 +45,6 @@ contract DAO {
     event FinishProposal(uint256 id, uint256 pros, uint256 cons, uint256 total, bool status);
     event NewProposal(uint256 id, bytes signature, address recipient, string description, uint256 finishAt);
 
-    modifier onlyChairperson {
-        require(msg.sender == chairperson, "Caller is not the chairperson");
-        _;
-    }
-
     modifier onlyOwner {
         require(msg.sender == owner, "Caller is not the owner");
         _;
@@ -136,9 +131,10 @@ contract DAO {
     * @param _recipient Recipient address
     * @param _description Description
     */
-    function addProposal(bytes calldata _callData, address _recipient, string calldata _description) external onlyChairperson {
-        _voteCounter.increment();
+    function addProposal(bytes calldata _callData, address _recipient, string calldata _description) external {
+        require(msg.sender == chairperson, "Caller is not the chairperson");
 
+        _voteCounter.increment();
         uint256 id = _voteCounter.current();
 
         uint256 finishAt = block.timestamp + debatingPeriodDuration;
