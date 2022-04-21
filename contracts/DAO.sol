@@ -27,6 +27,7 @@ contract DAO {
         uint256 pros;
         uint256 cons;
         mapping(address => bool) voted;
+        bytes callData;
         bool active;
     }
 
@@ -36,7 +37,6 @@ contract DAO {
     }
 
     mapping(uint256 => Proposal) private _proposals;
-    mapping(uint256 => bytes) private _callDataProposals;
     mapping(address => Elector) private _electors;
 
     event Withdraw(address elector, uint256 amount);
@@ -144,8 +144,8 @@ contract DAO {
         proposal.finishAt = finishAt;
         proposal.description = _description;
         proposal.recipient = _recipient;
+        proposal.callData = _callData;
         proposal.active = true;
-        _callDataProposals[id] = _callData;
 
         emit NewProposal(id, _callData, _recipient, _description, finishAt);
     }
@@ -165,7 +165,7 @@ contract DAO {
         bool success;
 
         if (total >= minimumQuorum && pros > cons) {
-            (success,) = proposal.recipient.call(_callDataProposals[_id]);
+            (success,) = proposal.recipient.call(proposal.callData);
         }
 
         delete proposal.active;
