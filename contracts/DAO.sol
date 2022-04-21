@@ -76,7 +76,7 @@ contract DAO {
     */
     function deposit(uint256 _amount) external {
         voteToken.safeTransferFrom(msg.sender, address(this), _amount);
-        _electors[msg.sender].balance = _amount;
+        _electors[msg.sender].balance += _amount;
 
         emit Deposit(msg.sender, _amount);
     }

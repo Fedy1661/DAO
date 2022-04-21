@@ -143,6 +143,18 @@ describe('DAO Contract', function () {
       await expect(tx).to.be.revertedWith(reason);
     });
   });
+  describe('deposit', () => {
+    it('should summed up tokens', async () => {
+      await token.approve(dao.address, minimumQuorum);
+
+      await dao.deposit(minimumQuorum / 2);
+      await dao.deposit(minimumQuorum / 2);
+
+      const tx = dao.withdraw(minimumQuorum);
+      const reason = 'Amount greater than your balance';
+      await expect(tx).not.to.be.revertedWith(reason)
+    });
+  });
   describe('Vote', () => {
     it('can take part in several votes', async () => {
       const callData = iToken.encodeFunctionData('mint', [dao.address, 5000]);
